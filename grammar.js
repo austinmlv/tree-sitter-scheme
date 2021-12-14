@@ -1,453 +1,398 @@
-// one aim is to try to parse what is correct (in the sense of
-// officially supported), but also be looser in parsing additional
-// things.  this is more or less in line with advice from tree-sitter
-// folks.
+/*
+ * grammar.js
+ * Copyright (C) 2021 Stephan Seitz <stephan.seitz@fau.de>
+ * Adapted from tree-sitter-clojure
+ *
+ * Distributed under terms of the MIT license.
+ */
 
-// java.lang.Character.isWhitespace AND comma
-//
-// Space Separator (Zs) but NOT including (U+00A0, U+2007, U+202F)
-//   U+0020, U+1680, U+2000, U+2001, U+2002, U+2003, U+2004, U+2005,
-//   U+2006, U+2008, U+2009, U+200A, U+205F, U+3000
-// Line Separator (Zl)
-//   U+2028
-// Paragraph Separator (Zp)
-//   U+2029
-// Horizontal Tabulation
-//   \t
-// Line Feed
-//   \n
-// Vertical Tabulation
-//   U+000B
-// Form Feed
-//   \f
-// Carriage Return
-//   \r
-// File Separator
-//   U+001C
-// Group Separator
-//   U+001D
-// Record Separator
-//   U+001E
-// Unit Separator
-//   U+001F
+const clojure = require("tree-sitter-clojure/grammar");
+
 const WHITESPACE_CHAR =
-      /[\f\n\r\t, \u000B\u001C\u001D\u001E\u001F\u2028\u2029\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200a\u205f\u3000]/;
+    /[\f\n\r\t \u000B\u001C\u001D\u001E\u001F\u2028\u2029\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200a\u205f\u3000]/;
 
 const WHITESPACE =
-      token(repeat1(WHITESPACE_CHAR));
+    token(repeat1(WHITESPACE_CHAR));
 
-const COMMENT =
-      token(/(;|#!).*\n?/);
+const PREC = {
+    NUM_LIT: 0,
+    NORMAL: 1,
+    PACKAGE_LIT: 2,
+    DOTTET_LIT: 3,
+    KWD_LIT: 4,
+    SPECIAL: 5,
+    META_LIT: 6,
+}
+
+const SYMBOL_HEAD =
+    /[^:\f\n\r\t ()\[\]{}"^;`\\,#'\u000B\u001C\u001D\u001E\u001F\u2028\u2029\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200a\u205f\u3000]/;
+
+const SYMBOL_WITHOUT_SLASH =
+    /[^:\f\n\r\t ()\[\]{}"^;/`\\,#'\u000B\u001C\u001D\u001E\u001F\u2028\u2029\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200a\u205f\u3000]/;
+
+const SYMBOL_BODY =
+    choice(SYMBOL_HEAD,
+        /[#']/);
+
+const SYMBOL =
+    token(seq(SYMBOL_HEAD,
+        repeat(SYMBOL_BODY)));
+
+const STRING =
+    token(seq('"',
+        repeat(/[^"\\]/),
+        repeat(seq("\\",
+            /./,
+            repeat(/[^"\\]/))),
+        '"'));
 
 const DIGIT =
-      /[0-9]/;
+    /[0-9]/;
 
 const ALPHANUMERIC =
-      /[0-9a-zA-Z]/;
+    /[0-9a-zA-Z]/;
 
 const HEX_DIGIT =
-      /[0-9a-fA-F]/;
+    /[0-9a-fA-F]/;
 
 const OCTAL_DIGIT =
-      /[0-7]/;
+    /[0-7]/;
+
+const BINARY_DIGIT =
+    /[0-1]/;
 
 const HEX_NUMBER =
-      seq("0",
-          /[xX]/,
-          repeat1(HEX_DIGIT),
-          optional("N"));
+    seq(choice('#x', '#X'), optional(/[+-]/),
+        repeat1(HEX_DIGIT));
 
 const OCTAL_NUMBER =
-      seq("0",
-          repeat1(OCTAL_DIGIT),
-          optional("N"));
+    seq(choice('#o', '#O'), optional(/[+-]/),
+        repeat1(OCTAL_DIGIT));
 
-// XXX: not constraining number before r/R
-// XXX: not constraining portion after r/R
+const BINARY_NUMBER =
+    seq(choice('#b', '#B'), optional(/[+-]/),
+        repeat1(BINARY_DIGIT));
+
 const RADIX_NUMBER =
-      seq(repeat1(DIGIT),
-          /[rR]/,
-          repeat1(ALPHANUMERIC));
+    seq('#',
+        repeat1(DIGIT),
+        /[rR]/,
+        repeat1(ALPHANUMERIC));
 
 // XXX: not accounting for division by zero
 const RATIO =
-      seq(repeat1(DIGIT),
-          "/",
-          repeat1(DIGIT));
+    seq(repeat1(DIGIT),
+        "/",
+        repeat1(DIGIT));
 
 const DOUBLE =
-      seq(repeat1(DIGIT),
-          optional(seq(".",
-                       repeat(DIGIT))),
-          optional(seq(/[eE]/,
-                       optional(/[+-]/),
-                       repeat1(DIGIT))),
-          optional("M"));
+    seq(repeat1(DIGIT),
+        optional(seq(".",
+            repeat(DIGIT))),
+        optional(seq(/[eEsSfFdDlL]/,
+            optional(/[+-]/),
+            repeat1(DIGIT))),
+    );
 
 const INTEGER =
-      seq(repeat1(DIGIT),
-          optional(/[MN]/));
+    seq(repeat1(DIGIT),
+        optional(/[MN]/));
 
 const NUMBER =
-      token(prec(10, seq(optional(/[+-]/),
-                choice(HEX_NUMBER,
-                       OCTAL_NUMBER,
-                       RADIX_NUMBER,
-                       RATIO,
-                       DOUBLE,
-                       INTEGER))));
+    token(seq(optional(/[+-]/),
+        choice(
+            HEX_NUMBER,
+            OCTAL_NUMBER,
+            RADIX_NUMBER,
+            BINARY_NUMBER,
+            RATIO,
+            DOUBLE,
+            INTEGER)));
 
-const NIL =
-      token('nil');
 
-const BOOLEAN =
-      token(choice('false',
-                   'true'));
+function clSymbol(symbol) {
+    return seq(optional(seq('cl', ':')), symbol)
+}
 
-const KEYWORD_HEAD =
-      /[^\f\n\r\t ()\[\]{}"@~^;`\\,:/\u000B\u001C\u001D\u001E\u001F\u2028\u2029\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200a\u205f\u3000]/;
+function loopSymbol(symbol) {
+    return seq(optional(seq(optional('cl'), ':')), symbol)
+}
 
-const KEYWORD_BODY =
-      choice(/[:'/]/,
-             KEYWORD_HEAD);
+function optSeq(...args) {
+    return optional(seq(...args))
+}
 
-const KEYWORD_NO_SIGIL =
-      seq(KEYWORD_HEAD,
-          repeat(KEYWORD_BODY));
 
-const AUTO_RESOLVE_MARK =
-      token("::");
+module.exports = grammar(clojure, {
+    name: 'scheme',
 
-const KEYWORD =
-      token(choice(// :my-ns/hi
-                   // :a
-                   // :/ is neither invalid nor valid, but repl accepts
-                   seq(":",
-                       choice("/",
-                             KEYWORD_NO_SIGIL)),
-                   // ::my-alias/hi
-                   // ::a
-                   // ::/ is invalid
-                   seq(AUTO_RESOLVE_MARK,
-                       KEYWORD_NO_SIGIL)));
+    extras: ($, original) => [...original, $.block_comment],
+    conflicts: ($,
+        original) => [...original,
+        [$.for_clause_word, $.package_lit],
+        [$.with_clause, $.package_lit],
+        [$.with_clause],
+        [$.for_clause],
+        [$.accumulation_clause],
+        [$.loop_macro, $.defun_keyword, $.package_lit]],
 
-const STRING =
-      token(seq('"',
-                repeat(/[^"\\]/),
-                repeat(seq("\\",
-                           /./,
-                           repeat(/[^"\\]/))),
-                '"'));
 
-// XXX: better to match \o378 as a single item
-const OCTAL_CHAR =
-      seq("o",
-          choice(seq(DIGIT, DIGIT, DIGIT),
-                 seq(DIGIT, DIGIT),
-                 seq(DIGIT)));
-          // choice(seq(/[0-3]/, OCTAL_DIGIT, OCTAL_DIGIT),
-          //        seq(OCTAL_DIGIT, OCTAL_DIGIT),
-          //        seq(OCTAL_DIGIT)));
+    rules: {
+        block_comment: _ => token(seq('#|', repeat(choice(/[^|]/, /\|[^#]/)), '|#')),
 
-const NAMED_CHAR =
-      choice("backspace",
-             "formfeed",
-             "newline",
-             "return",
-             "space",
-             "tab");
+        fancy_literal: _ => token(seq('|', repeat(/[^|]/), '|')),
 
-// XXX: outside of: (c >= '\uD800' && c <= '\uDFFF') - LispReader.java
-//      but not doing this
-const UNICODE =
-      seq("u",
-          HEX_DIGIT,
-          HEX_DIGIT,
-          HEX_DIGIT,
-          HEX_DIGIT);
+        _ws: _ =>
+            WHITESPACE,
 
-// XXX: not quite sure what this is supposed to be...
-//      return Character.valueOf(token.charAt(0)); -- LispReader.java
-//      java char is 16 bits...what can tree-sitter manage?
-//
-// XXX: null is supposed to be usable but putting \x00 below
-//      does not seem to work
-const ANY_CHAR =
-      /.|\n/;
+        unquoting_lit: $ =>
+            seq(field('marker', ","),
+                repeat($._gap),
+                field('value', $._form)),
 
-const CHARACTER =
-      token(seq("\\",
-                choice(OCTAL_CHAR,
-                       NAMED_CHAR,
-                       UNICODE,
-                       ANY_CHAR)));
+        unquote_splicing_lit: $ =>
+            seq(repeat($._metadata_lit),
+                field('marker', ",@"),
+                repeat($._gap),
+                field('value', $._form)),
 
-const SYMBOL_HEAD =
-      /[^\f\n\r\t ()\[\]{}"@~^;`\\,:#'0-9\u000B\u001C\u001D\u001E\u001F\u2028\u2029\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200a\u205f\u3000]/;
+        syn_quoting_lit: $ =>
+            seq(field('marker', "`"),
+                repeat($._gap),
+                field('value', ($._form))),
 
-const SYMBOL_BODY =
-      choice(SYMBOL_HEAD,
-             /[:#'0-9]/);
+        defun: $ =>
+            prec(PREC.SPECIAL, seq(field('open', "("),
+                optional($._gap),
+                $.defun_header,
+                optional($._gap),
+                repeat(choice(field('value', $._form), $._gap)),
+                field('close', ")"))),
 
-// XXX: no attempt is made to enforce certain complex things, e.g.
-//
-//        Symbols beginning or ending with ':' are reserved by Clojure.
-//        A symbol can contain one or more non-repeating ':'s
-const SYMBOL =
-      token(seq(SYMBOL_HEAD,
-                repeat(SYMBOL_BODY)));
+        _format_token: $ => choice(alias(NUMBER, $.num_lit), seq("'", alias(/./, $.char_lit))),
+        // https://en.wikipedia.org/wiki/Format_Common_Lisp)
+        format_prefix_parameters: _ => choice('v', 'V', '#'),
+        format_modifiers: $ => seq(repeat(choice($._format_token, ',')), choice('@', '@:', ':', ':@')),
+        //format_modifiers: _ => choice('@', '@:', ':', ':@'),
+        format_directive_type: $ => choice(
+            seq(optional(field('repetitions', $._format_token)), choice('~', '%', '&', '|')),
+            /[cC]/,
+            /\^/,
+            '\n',
+            '\r',
+            /[pP]/,
+            /[iI]/,
+            /[wW]/,
+            /[aA]/,
+            '_',
+            /[()]/,
+            /[{}]/,
+            /[\[\]]/,
+            /[<>]/,
+            ';',
+            seq(field('numberOfArgs', $._format_token), '*'),
+            seq('/', choice(alias($._package_lit_without_slash, $.package_lit), $._sym_lit_without_slash), '/'),
+            '?',
+            "Newline",
+            seq(repeat(choice($._format_token, ',')), /[$rRbBdDgGxXeEoOsStTfF]/),
+        ),
+        format_specifier: $ =>
+            prec.left(seq(
+                '~',
+                optional($.format_prefix_parameters),
+                optional($.format_modifiers),
+                prec(5, $.format_directive_type),
+            )),
 
-module.exports = grammar({
-  name: 'clojure',
+        str_lit: $ =>
+            seq(
+                '"',
+                repeat(choice(
+                    token.immediate(prec(1, /[^\\~"]+/)),
+                    token.immediate(seq(/\\./)),
+                    $.format_specifier,
+                )),
+                optional('~'),
+                '"',
+            ),
 
-  extras: $ =>
-    [],
+        for_clause_word: _ => loopSymbol(choice(
+            'in',
+            'across',
+            'being',
+            'using',
+            /being (the|each) (hash-key[s]?|hash-value[s]?|present-symbol[s]?) (in|of)/,
+            'below',
+            'above',
+            'from',
+            'to',
+            'upto',
+            'upfrom',
+            'downto',
+            'downfrom',
+            'on',
+            'by',
+            'then',
+            '=')),
 
-  conflicts: $ =>
-    [],
 
-  rules: {
-    // THIS MUST BE FIRST -- even though this doesn't look like it matters
-    source: $ =>
-      repeat(choice($._form,
-                    $._gap)),
+        _for_part: $ => seq(repeat($._gap), $.for_clause_word, repeat($._gap), $._form),
 
-    _gap: $ =>
-      choice($._ws,
-             $.comment,
-             $.dis_expr),
+        accumulation_verb: _ => loopSymbol(/((collect|append|nconc|count|maximize|minimize)(ing)?|sum(ming)?)/),
+        for_clause: $ => choice(seq(choice(loopSymbol('for'), loopSymbol('and'), loopSymbol('as')), repeat($._gap), field('variable', $._form), optional(field('type', seq(repeat($._gap), $._form))),
+            repeat1($._for_part)), loopSymbol('and')),
+        with_clause: $ => seq(loopSymbol('with'), repeat($._gap), choice($._form, seq($._form, repeat($._gap), field('type', $._form))), repeat($._gap), optSeq(loopSymbol("="), repeat($._gap)), optSeq($._form, repeat($._gap))),
+        do_clause: $ => prec.left(seq(loopSymbol('do'), repeat1(prec.left(seq(repeat($._gap), $._form, repeat($._gap)))))),
+        while_clause: $ => prec.left(seq(choice(loopSymbol('while'), loopSymbol('until')), repeat($._gap), $._form)),
+        repeat_clause: $ => prec.left(seq(loopSymbol('repeat'), repeat($._gap), $._form)),
+        condition_clause: $ => prec.left(choice(seq(choice(loopSymbol('when'), loopSymbol('if'), loopSymbol('unless'), loopSymbol('always'), loopSymbol('thereis'), loopSymbol('never')), repeat($._gap), $._form), loopSymbol("else"))),
+        accumulation_clause: $ => seq($.accumulation_verb, repeat($._gap), $._form, optional(seq(repeat($._gap), loopSymbol('into'), repeat($._gap), $._form))),
+        termination_clause: $ => prec.left(seq(choice(loopSymbol('finally'), loopSymbol('return'), loopSymbol('initially')), repeat($._gap), $._form)),
 
-    _ws: $ =>
-      WHITESPACE,
 
-    comment: $ =>
-      COMMENT,
+        loop_clause: $ =>
+            seq(choice(
+                $.for_clause,
+                $.do_clause,
+                $.list_lit,
+                $.while_clause,
+                $.repeat_clause,
+                $.accumulation_clause,
+                $.condition_clause,
+                $.with_clause,
+                $.termination_clause,
+                $.while_clause,
+            )),
 
-    dis_expr: $ =>
-      seq(field('marker', "#_"),
-          repeat($._gap),
-          field('value', $._form)),
+        loop_macro: $ =>
+            prec(PREC.SPECIAL,
+                seq(field('open', "("),
+                    optional($._gap),
+                    clSymbol('loop'),
+                    repeat(choice($.loop_clause, $._gap)),
+                    field('close', ")"))),
 
-    _form: $ =>
-      choice(// atom-ish
-             $.num_lit,
-             $.kwd_lit,
-             $.str_lit,
-             $.char_lit,
-             $.nil_lit,
-             $.bool_lit,
-             $.sym_lit,
-             // basic collection-ish
-             $.list_lit,
-             $.map_lit,
-             $.vec_lit,
-             // dispatch reader macros
-             $.set_lit,
-             $.anon_fn_lit,
-             $.regex_lit,
-             $.read_cond_lit,
-             $.splicing_read_cond_lit,
-             $.ns_map_lit,
-             $.var_quoting_lit,
-             $.sym_val_lit,
-             $.evaling_lit,
-             $.tagged_or_ctor_lit,
-             // some other reader macros
-             $.derefing_lit,
-             $.quoting_lit,
-             $.syn_quoting_lit,
-             $.unquote_splicing_lit,
-             $.unquoting_lit),
+        defun_keyword: _ => prec(10, clSymbol(choice('defun', 'defmacro', 'defgeneric', 'defmethod'))),
 
-    num_lit: $ =>
-      NUMBER,
+        defun_header: $ =>
+            prec(PREC.SPECIAL, choice(
+                seq(field('keyword', $.defun_keyword),
+                    repeat($._gap),
+                    choice($.unquoting_lit, $.unquote_splicing_lit)
+                ),
+                seq(field('keyword', $.defun_keyword),
+                    repeat($._gap),
+                    field('function_name', $._form),
+                    optional(field('specifier', seq(repeat($._gap), choice($.kwd_lit, $.sym_lit)))),
+                    repeat($._gap),
+                    field('lambda_list', choice($.list_lit, $.unquoting_lit))),
+                seq(field('keyword', alias('lambda', $.defun_keyword)),
+                    repeat($._gap),
+                    field('lambda_list', choice($.list_lit, $.unquoting_lit)))
+            )),
 
-    kwd_lit: $ =>
-      KEYWORD,
+        array_dimension: _ => prec(100, /\d+[aA]/),
 
-    str_lit: $ =>
-      STRING,
+        char_lit: _ =>
+            seq('#', /\\([^\f\n\r\t ()]+|[()])/),
 
-    char_lit: $ =>
-      CHARACTER,
+        vec_lit: $ =>
+            prec(PREC.SPECIAL,
+                choice(
+                    seq(field('open', choice('#0A', '#0a')), choice($.num_lit, $.complex_num_lit)),
+                    seq(field('open', '#'), optional($.array_dimension), $.list_lit))),
 
-    nil_lit: $ =>
-      NIL,
+        path_lit: $ =>
+            prec(PREC.SPECIAL,
+                seq(field('open', choice('#P', '#p')), alias(STRING, $.str_lit))),
 
-    bool_lit: $ =>
-      BOOLEAN,
+        _bare_list_lit: $ =>
+            choice(prec(PREC.SPECIAL, $.defun),
+                prec(PREC.SPECIAL, $.loop_macro),
+                seq(field('open', "("),
+                    repeat(choice(field('value', $._form), $._gap)),
+                    field('close', ")"))),
 
-    sym_lit: $ =>
-      seq(repeat($._metadata_lit),
-          SYMBOL),
+        package_lit: $ => prec(PREC.PACKAGE_LIT, choice(seq(
+            field('package', choice($.sym_lit, 'cl')), // Make optional, instead of keywords?
+            choice(':', '::'),
+            field('symbol', $.sym_lit)
+        ), prec(1, 'cl'))),
 
-    _metadata_lit: $ =>
-      seq(choice(field('meta', $.meta_lit),
-                 field('old_meta', $.old_meta_lit)),
-          optional(repeat($._gap))),
+        _package_lit_without_slash: $ => seq(
+            field('package', choice($._sym_lit_without_slash, 'cl')), // Make optional, instead of keywords?
+            choice(':', '::'),
+            field('symbol', $._sym_lit_without_slash)
+        ),
 
-    meta_lit: $ =>
-      seq(field('marker', "^"),
-          repeat($._gap),
-          field('value', choice($.read_cond_lit,
-                                $.map_lit,
-                                $.str_lit,
-                                $.kwd_lit,
-                                $.sym_lit))),
+        kwd_lit: $ => prec(PREC.KWD_LIT, seq(
+            choice(':', '::'),
+            $.kwd_symbol,
+        )),
 
-    old_meta_lit: $ =>
-      seq(field('marker', "#^"),
-          repeat($._gap),
-          field('value', choice($.read_cond_lit,
-                                $.map_lit,
-                                $.str_lit,
-                                $.kwd_lit,
-                                $.sym_lit))),
+        sym_lit: _ =>
+            seq(SYMBOL),
 
-    list_lit: $ =>
-      seq(repeat($._metadata_lit),
-          $._bare_list_lit),
+        _sym_lit_without_slash: $ =>
+            alias(repeat1(SYMBOL_WITHOUT_SLASH), $.sym_lit),
 
-    _bare_list_lit: $ =>
-      seq(field('open', "("),
-          repeat(choice(field('value', $._form),
-                        $._gap)),
-          field('close', ")")),
+        kwd_symbol: _ =>
+            seq(SYMBOL),
 
-    map_lit: $ =>
-      seq(repeat($._metadata_lit),
-          $._bare_map_lit),
+        self_referential_reader_macro: _ => /#\d+[=#]/,
 
-    _bare_map_lit: $ =>
-      seq(field('open', "{"),
-          repeat(choice(field('value', $._form),
-                        $._gap)),
-          field('close', "}")),
+        _form: $ =>
+            seq(optional('#'),
+                choice(
+                    $.num_lit,
+                    $.fancy_literal,
+                    $.vec_lit,
+                    $.kwd_lit,
+                    // No idea why this is necessary...It is never used but triggers some background magic
+                    alias(seq(field('open', '#'), optional(/\d+[aA]/), $.list_lit), $.vec_lit),
+                    $.str_lit,
+                    $.self_referential_reader_macro,
+                    $.char_lit,
+                    $.nil_lit,
+                    $.path_lit,
+                    $.sym_lit,
+                    $.package_lit,
+                    $.list_lit,
+                    $.set_lit,
+                    $.read_cond_lit,
+                    $.splicing_read_cond_lit,
+                    $.var_quoting_lit,
+                    $.quoting_lit,
+                    $.syn_quoting_lit,
+                    $.unquote_splicing_lit,
+                    $.unquoting_lit,
+                    $.include_reader_macro,
+                    $.complex_num_lit,
+                    ".",
+                )),
 
-    vec_lit: $ =>
-      seq(repeat($._metadata_lit),
-          $._bare_vec_lit),
+        num_lit: _ =>
+            seq(NUMBER, optional(/[sSfFdDlL]/)),
 
-    _bare_vec_lit: $ =>
-      seq(field('open', "["),
-          repeat(choice(field('value', $._form),
-                        $._gap)),
-          field('close', "]")),
+        include_reader_macro: $ =>
+            seq(repeat($._metadata_lit),
+                field('marker', choice("#+", "#-")),
+                repeat($._gap),
+                field('condition', $._form),
+                repeat($._gap),
+                field('target', $._form)),
 
-    set_lit: $ =>
-      seq(repeat($._metadata_lit),
-          $._bare_set_lit),
-
-    _bare_set_lit: $ =>
-      seq(field('marker', "#"),
-          field('open', "{"),
-          repeat(choice(field('value', $._form),
-                        $._gap)),
-          field('close', "}")),
-
-    anon_fn_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "#"),
-          $._bare_list_lit),
-
-    regex_lit: $ =>
-      seq(field('marker', "#"),
-          STRING),
-
-    read_cond_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "#?"),
-          // whitespace possible, but neither comment nor discard
-          repeat($._ws),
-          $._bare_list_lit),
-
-    splicing_read_cond_lit: $ =>
-      // XXX: metadata here doesn't seem to make sense, but the repl
-      //      will accept: [^:x #?@(:clj [[:a]] :cljr [[:b]])]
-      seq(repeat($._metadata_lit),
-          field('marker', "#?@"),
-          // whitespace possible, but neither comment nor discard
-          repeat($._ws),
-          $._bare_list_lit),
-
-    auto_res_mark: $ =>
-      AUTO_RESOLVE_MARK,
-
-    ns_map_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "#"),
-          field('prefix', choice($.auto_res_mark,
-                                 $.kwd_lit)),
-          repeat($._gap),
-          $._bare_map_lit),
-
-    var_quoting_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "#'"),
-          repeat($._gap),
-          // XXX: symbol, reader conditional, and tagged literal can work
-          //      any other things?
-          field('value', $._form)),
-
-    sym_val_lit: $ =>
-      seq(field('marker', "##"),
-          repeat($._gap),
-          field('value', $.sym_lit)),
-
-    evaling_lit: $ =>
-      seq(repeat($._metadata_lit), // ^:x #=(vector 1)
-          field('marker', "#="),
-          repeat($._gap),
-          field('value', choice($.list_lit,
-                                $.read_cond_lit,
-                                // #= ^:a java.lang.String
-                                $.sym_lit))),
-
-    // #uuid "00000000-0000-0000-0000-000000000000"
-    // #user.Fun[1 2]
-    // #user.Fun{:a 1 :b 2}
-    tagged_or_ctor_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "#"),
-          // # uuid "00000000-0000-0000-0000-000000000000"
-          // # #_ 1 uuid "00000000-0000-0000-0000-000000000000"
-          // etc.
-          repeat($._gap),
-          // # ^:a uuid "00000000-0000-0000-0000-000000000000"
-          field('tag', $.sym_lit),
-          repeat($._gap),
-          field('value', $._form)),
-
-    derefing_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "@"),
-          repeat($._gap),
-          field('value', $._form)),
-
-    quoting_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "'"),
-          repeat($._gap),
-          field('value', $._form)),
-
-    syn_quoting_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "`"),
-          repeat($._gap),
-          field('value', $._form)),
-
-    unquote_splicing_lit: $ =>
-      // XXX: metadata here doesn't seem to make sense, but the repl
-      //      will accept: `(^:x ~@[:a :b :c])
-      seq(repeat($._metadata_lit),
-          field('marker', "~@"),
-          repeat($._gap),
-          field('value', $._form)),
-
-    unquoting_lit: $ =>
-      seq(repeat($._metadata_lit),
-          field('marker', "~"),
-          repeat($._gap),
-          field('value', $._form)),
-  }
+        complex_num_lit: $ =>
+            seq(repeat($._metadata_lit),
+                field('marker', choice("#C", "#c")),
+                repeat($._gap),
+                '(',
+                repeat($._gap),
+                field('real', $.num_lit), // only numbers allowed here
+                repeat($._gap),
+                field('imaginary', $.num_lit),
+                repeat($._gap),
+                ')'
+            ),
+    }
 });

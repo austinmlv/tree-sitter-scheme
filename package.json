@@ -3,20 +3,30 @@
   "version": "1.0.0",
   "description": "A Tree-sitter grammar for Scheme",
   "keywords": [
-    "Tree-sitter",
-    "scheme",
-    "parser"
+    "lexer",
+    "parser",
+    "Scheme"
   ],
   "main": "bindings/node",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Austin Miller",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "nan": "^2.15.0"
+    "nan": "^2.15.0",
+    "tree-sitter-clojure": "git@github.com:theHamsta/tree-sitter-clojure-1.git#95c7959c461406381b42113dcf4591008c663d21"
   },
   "devDependencies": {
     "tree-sitter-cli": "^0.20.1"
-  }
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.scm",
+      "file-types": [
+        "scm"
+      ],
+      "injection-regex": "scheme"
+    }
+  ]
 }
