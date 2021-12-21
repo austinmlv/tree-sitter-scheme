@@ -1,11 +1,29 @@
 [
   {
-    "type": "comment",
+    "type": "source",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "nested_comment",
+          "named": true
+        }
+      ]
+    }
   },
   {
-    "type": "#",
-    "named": false
+    "type": "comment",
+    "named": true
+  },
+  {
+    "type": "nested_comment",
+    "named": true
   }
 ]
