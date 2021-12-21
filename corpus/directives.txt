@@ -1,0 +1,17 @@
+==========
+Directives 1
+==========
+#!no-fold-case
+
+---
+(source
+  (directive))
+
+==========
+Directives 2
+==========
+#!guile -L .
+
+---
+(source
+  (directive))

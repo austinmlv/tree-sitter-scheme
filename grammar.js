@@ -5,10 +5,16 @@ const WHITESPACE =
       token(repeat1(WHITESPACE_CHAR));
 
 const COMMENT =
-    token(/(;|#!).*\n?/);
+    token(/;.*\n?/);
 
 const NESTED_COMMENT =
     token(seq(/#\|.*\n/, repeat(choice(WHITESPACE, /./)), /\|#\n?/));
+
+const DELIMITER =
+    choice(WHITESPACE, '|', '(', ')', '"', ';')
+
+const DIRECTIVE =
+    token(seq(/#!/, repeat(/./), DELIMITER))
 
 module.exports = grammar({
     name: 'scheme',
@@ -18,7 +24,7 @@ module.exports = grammar({
     [],
     rules: {
         source: $ =>
-            repeat(choice($._gap)),
+            repeat(choice($._gap, $.directive)),
 
         _gap: $ => choice($._ws, $.comment, $.nested_comment),
 
@@ -26,6 +32,8 @@ module.exports = grammar({
 
         comment: $ => COMMENT,
         
-        nested_comment: $ => NESTED_COMMENT
+        nested_comment: $ => NESTED_COMMENT,
+
+        directive: $ => DIRECTIVE
     }
 });

@@ -8,9 +8,9 @@
 #define LANGUAGE_VERSION 13
 #define STATE_COUNT 5
 #define LARGE_STATE_COUNT 4
-#define SYMBOL_COUNT 7
+#define SYMBOL_COUNT 8
 #define ALIAS_COUNT 0
-#define TOKEN_COUNT 4
+#define TOKEN_COUNT 5
 #define EXTERNAL_TOKEN_COUNT 0
 #define FIELD_COUNT 0
 #define MAX_ALIAS_SEQUENCE_LENGTH 2
@@ -20,9 +20,10 @@ enum {
   sym__ws = 1,
   sym_comment = 2,
   sym_nested_comment = 3,
-  sym_source = 4,
-  sym__gap = 5,
-  aux_sym_source_repeat1 = 6,
+  sym_directive = 4,
+  sym_source = 5,
+  sym__gap = 6,
+  aux_sym_source_repeat1 = 7,
 };
 
 static const char * const ts_symbol_names[] = {
@@ -30,6 +31,7 @@ static const char * const ts_symbol_names[] = {
   [sym__ws] = "_ws",
   [sym_comment] = "comment",
   [sym_nested_comment] = "nested_comment",
+  [sym_directive] = "directive",
   [sym_source] = "source",
   [sym__gap] = "_gap",
   [aux_sym_source_repeat1] = "source_repeat1",
@@ -40,6 +42,7 @@ static const TSSymbol ts_symbol_map[] = {
   [sym__ws] = sym__ws,
   [sym_comment] = sym_comment,
   [sym_nested_comment] = sym_nested_comment,
+  [sym_directive] = sym_directive,
   [sym_source] = sym_source,
   [sym__gap] = sym__gap,
   [aux_sym_source_repeat1] = aux_sym_source_repeat1,
@@ -59,6 +62,10 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .named = true,
   },
   [sym_nested_comment] = {
+    .visible = true,
+    .named = true,
+  },
+  [sym_directive] = {
     .visible = true,
     .named = true,
   },
@@ -103,60 +110,85 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
   eof = lexer->eof(lexer);
   switch (state) {
     case 0:
-      if (eof) ADVANCE(5);
-      if (lookahead == '#') ADVANCE(4);
-      if (lookahead == ';') ADVANCE(8);
-      if (sym__ws_character_set_1(lookahead)) ADVANCE(6);
+      if (eof) ADVANCE(6);
+      if (lookahead == '#') ADVANCE(5);
+      if (lookahead == ';') ADVANCE(9);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(7);
       END_STATE();
     case 1:
-      if (lookahead == '\n') ADVANCE(2);
-      if (lookahead == '#') ADVANCE(10);
-      if (lookahead == '|') ADVANCE(1);
-      if (sym__ws_character_set_1(lookahead)) ADVANCE(2);
-      if (lookahead != 0) ADVANCE(2);
+      if (lookahead == '\n') ADVANCE(13);
+      if (lookahead == '"' ||
+          lookahead == '(' ||
+          lookahead == ')' ||
+          lookahead == ';' ||
+          lookahead == '|') ADVANCE(12);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(12);
+      if (lookahead != 0) ADVANCE(1);
       END_STATE();
     case 2:
-      if (lookahead == '\n') ADVANCE(2);
-      if (lookahead == '|') ADVANCE(1);
-      if (sym__ws_character_set_1(lookahead)) ADVANCE(2);
-      if (lookahead != 0) ADVANCE(2);
+      if (lookahead == '\n') ADVANCE(3);
+      if (lookahead == '#') ADVANCE(11);
+      if (lookahead == '|') ADVANCE(2);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(3);
+      if (lookahead != 0) ADVANCE(3);
       END_STATE();
     case 3:
-      if (lookahead == '\n') ADVANCE(2);
+      if (lookahead == '\n') ADVANCE(3);
+      if (lookahead == '|') ADVANCE(2);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(3);
       if (lookahead != 0) ADVANCE(3);
       END_STATE();
     case 4:
-      if (lookahead == '!') ADVANCE(8);
-      if (lookahead == '|') ADVANCE(3);
+      if (lookahead == '\n') ADVANCE(3);
+      if (lookahead != 0) ADVANCE(4);
       END_STATE();
     case 5:
-      ACCEPT_TOKEN(ts_builtin_sym_end);
+      if (lookahead == '!') ADVANCE(1);
+      if (lookahead == '|') ADVANCE(4);
       END_STATE();
     case 6:
-      ACCEPT_TOKEN(sym__ws);
-      if (sym__ws_character_set_1(lookahead)) ADVANCE(6);
+      ACCEPT_TOKEN(ts_builtin_sym_end);
       END_STATE();
     case 7:
-      ACCEPT_TOKEN(sym_comment);
+      ACCEPT_TOKEN(sym__ws);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(7);
       END_STATE();
     case 8:
       ACCEPT_TOKEN(sym_comment);
-      if (lookahead == '\n') ADVANCE(7);
-      if (lookahead != 0) ADVANCE(8);
       END_STATE();
     case 9:
-      ACCEPT_TOKEN(sym_nested_comment);
-      if (lookahead == '\n') ADVANCE(2);
-      if (lookahead == '|') ADVANCE(1);
-      if (sym__ws_character_set_1(lookahead)) ADVANCE(2);
-      if (lookahead != 0) ADVANCE(2);
+      ACCEPT_TOKEN(sym_comment);
+      if (lookahead == '\n') ADVANCE(8);
+      if (lookahead != 0) ADVANCE(9);
       END_STATE();
     case 10:
       ACCEPT_TOKEN(sym_nested_comment);
-      if (lookahead == '\n') ADVANCE(9);
-      if (lookahead == '|') ADVANCE(1);
-      if (sym__ws_character_set_1(lookahead)) ADVANCE(2);
-      if (lookahead != 0) ADVANCE(2);
+      if (lookahead == '\n') ADVANCE(3);
+      if (lookahead == '|') ADVANCE(2);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(3);
+      if (lookahead != 0) ADVANCE(3);
+      END_STATE();
+    case 11:
+      ACCEPT_TOKEN(sym_nested_comment);
+      if (lookahead == '\n') ADVANCE(10);
+      if (lookahead == '|') ADVANCE(2);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(3);
+      if (lookahead != 0) ADVANCE(3);
+      END_STATE();
+    case 12:
+      ACCEPT_TOKEN(sym_directive);
+      if (lookahead == '\n') ADVANCE(13);
+      if (lookahead == '"' ||
+          lookahead == '(' ||
+          lookahead == ')' ||
+          lookahead == ';' ||
+          lookahead == '|') ADVANCE(12);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(12);
+      if (lookahead != 0) ADVANCE(1);
+      END_STATE();
+    case 13:
+      ACCEPT_TOKEN(sym_directive);
+      if (sym__ws_character_set_1(lookahead)) ADVANCE(13);
       END_STATE();
     default:
       return false;
@@ -177,6 +209,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__ws] = ACTIONS(1),
     [sym_comment] = ACTIONS(1),
     [sym_nested_comment] = ACTIONS(1),
+    [sym_directive] = ACTIONS(1),
   },
   [1] = {
     [sym_source] = STATE(4),
@@ -186,6 +219,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__ws] = ACTIONS(5),
     [sym_comment] = ACTIONS(5),
     [sym_nested_comment] = ACTIONS(5),
+    [sym_directive] = ACTIONS(5),
   },
   [2] = {
     [sym__gap] = STATE(3),
@@ -194,6 +228,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__ws] = ACTIONS(9),
     [sym_comment] = ACTIONS(9),
     [sym_nested_comment] = ACTIONS(9),
+    [sym_directive] = ACTIONS(9),
   },
   [3] = {
     [sym__gap] = STATE(3),
@@ -202,6 +237,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__ws] = ACTIONS(13),
     [sym_comment] = ACTIONS(13),
     [sym_nested_comment] = ACTIONS(13),
+    [sym_directive] = ACTIONS(13),
   },
 };
 

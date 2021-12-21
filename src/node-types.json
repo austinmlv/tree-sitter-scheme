@@ -12,6 +12,10 @@
           "named": true
         },
         {
+          "type": "directive",
+          "named": true
+        },
+        {
           "type": "nested_comment",
           "named": true
         }
@@ -20,6 +24,10 @@
   },
   {
     "type": "comment",
+    "named": true
+  },
+  {
+    "type": "directive",
     "named": true
   },
   {
