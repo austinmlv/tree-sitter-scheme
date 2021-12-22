@@ -37,14 +37,6 @@ const HEX_DIGIT =
 const OCTAL_DIGIT =
       /[0-7]/;
 
-const STRING =
-      token(seq('"',
-                repeat(/[^"\\]/),
-                repeat(seq("\\",
-                           /./,
-                           repeat(/[^"\\]/))),
-                '"'));
-
 const OCTAL_CHAR =
       seq("o",
           choice(seq(DIGIT, DIGIT, DIGIT),
@@ -63,10 +55,15 @@ const NAMED_CHAR =
              "tab");
 
 const CHARACTER =
-      token(seq("#\\",
-                choice(seq(/[xX]/, repeat1(HEX_DIGIT)),
-                       NAMED_CHAR,
-                       ANY_CHAR)));
+      seq('#', /\\[^\f\n\r\t ()]+/)
+
+const STRING =
+      token(seq('"',
+                repeat(/[^"\\]/),
+                repeat(seq("\\",
+                           /./,
+                           repeat(/[^"\\]/))),
+                '"'));
 
 module.exports = grammar({
     name: 'scheme',
