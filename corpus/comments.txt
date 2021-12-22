@@ -1,14 +1,14 @@
-========
+============
 Comments 1
-========
+============
 ;
 ---
 (source
   (comment))
 
-========
+==========
 Comments 2
-========
+==========
 ;;
 ;;
 ---
@@ -16,9 +16,9 @@ Comments 2
   (comment)
   (comment))
 
-========
+==========
 Comments 3
-========
+==========
 #|
 This is a
 multi line
@@ -28,9 +28,9 @@ comment!
 (source
   (nested_comment))
 
-========
+==========
 Comments 4
-========
+==========
 #| More text here
 This is a
 multi line
@@ -39,3 +39,11 @@ comment!
 ---
 (source
   (nested_comment))
+
+==========
+Comments 5
+==========
+#; Alternative comment
+---
+(source
+  (comment))

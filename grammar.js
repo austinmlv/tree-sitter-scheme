@@ -5,7 +5,7 @@ const WHITESPACE =
       token(repeat1(WHITESPACE_CHAR));
 
 const COMMENT =
-    token(/;.*\n?/);
+    token(/#?;.*\n?/);
 
 const NESTED_COMMENT =
     token(seq(/#\|.*\n/, repeat(choice(WHITESPACE, /./)), /\|#\n?/));
