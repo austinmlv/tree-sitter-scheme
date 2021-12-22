@@ -17,10 +17,10 @@ const DIRECTIVE =
     token(seq(/#!/, repeat(/./), DELIMITER))
 
 const OPEN_BRACKET =
-    choice("(", "[", "{")
+    choice('(', '[', '{')
 
 const CLOSE_BRACKET =
-    choice(")", "]", "}")
+    choice(')', ']', '}')
 
 const BOOLEAN =
     choice(/#t(rue)?/, /#f(alse)?/)
@@ -41,15 +41,15 @@ const OCTAL_DIGIT =
       /[0-7]/;
 
 const NAMED_CHAR =
-      choice("alarm",
-             "backspace",
-             "delete",
-             "escape",
-             "newline",
-             "null",
-             "return",
-             "space",
-             "tab");
+      choice('alarm',
+             'backspace',
+             'delete',
+             'escape',
+             'newline',
+             'null',
+             'return',
+             'space',
+             'tab');
 
 const CHARACTER =
       seq('#', /\\[^\f\n\r\t ()]+/)
