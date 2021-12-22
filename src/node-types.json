@@ -1,5 +1,15 @@
 [
   {
+    "type": "boolean",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "character",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "list",
     "named": true,
     "fields": {}
@@ -12,6 +22,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "boolean",
+          "named": true
+        },
         {
           "type": "character",
           "named": true
@@ -40,6 +54,10 @@
     }
   },
   {
+    "type": "#",
+    "named": false
+  },
+  {
     "type": "(",
     "named": false
   },
@@ -54,10 +72,6 @@
   {
     "type": "]",
     "named": false
-  },
-  {
-    "type": "character",
-    "named": true
   },
   {
     "type": "comment",

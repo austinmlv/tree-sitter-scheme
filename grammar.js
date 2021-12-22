@@ -22,6 +22,9 @@ const OPEN_BRACKET =
 const CLOSE_BRACKET =
     choice(")", "]", "}")
 
+const BOOLEAN =
+    choice(/#t(rue)?/, /#f(alse)?/)
+
 const ANY_CHAR =
       /./;
 
@@ -87,9 +90,12 @@ module.exports = grammar({
 
         _form: $ =>
             choice(
+                $.boolean,
                 $.character,
                 $.string,
                 $.list),
+
+        boolean: $ => BOOLEAN,
 
         character: $ => CHARACTER,
 

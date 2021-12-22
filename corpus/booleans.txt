@@ -1,0 +1,31 @@
+==========
+Booleans 1
+==========
+#t
+---
+(source
+  (boolean))
+
+==========
+Booleans 2
+==========
+#true
+---
+(source
+  (boolean))
+
+==========
+Booleans 3
+==========
+#f
+---
+(source
+  (boolean))
+
+==========
+Booleans 4
+==========
+#false
+---
+(source
+  (boolean))
