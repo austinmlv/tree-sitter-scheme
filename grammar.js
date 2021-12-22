@@ -40,12 +40,6 @@ const HEX_DIGIT =
 const OCTAL_DIGIT =
       /[0-7]/;
 
-const OCTAL_CHAR =
-      seq("o",
-          choice(seq(DIGIT, DIGIT, DIGIT),
-                 seq(DIGIT, DIGIT),
-                 seq(DIGIT)));
-
 const NAMED_CHAR =
       choice("alarm",
              "backspace",
