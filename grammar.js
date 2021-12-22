@@ -16,6 +16,58 @@ const DELIMITER =
 const DIRECTIVE =
     token(seq(/#!/, repeat(/./), DELIMITER))
 
+const OPEN_BRACKET =
+    choice("(", "[", "{")
+
+const CLOSE_BRACKET =
+    choice(")", "]", "}")
+
+const ANY_CHAR =
+      /./;
+
+const DIGIT =
+      /[0-9]/;
+
+const ALPHANUMERIC =
+      /[0-9a-zA-Z]/;
+
+const HEX_DIGIT =
+      /[0-9a-fA-F]/;
+
+const OCTAL_DIGIT =
+      /[0-7]/;
+
+const STRING =
+      token(seq('"',
+                repeat(/[^"\\]/),
+                repeat(seq("\\",
+                           /./,
+                           repeat(/[^"\\]/))),
+                '"'));
+
+const OCTAL_CHAR =
+      seq("o",
+          choice(seq(DIGIT, DIGIT, DIGIT),
+                 seq(DIGIT, DIGIT),
+                 seq(DIGIT)));
+
+const NAMED_CHAR =
+      choice("alarm",
+             "backspace",
+             "delete",
+             "escape",
+             "newline",
+             "null",
+             "return",
+             "space",
+             "tab");
+
+const CHARACTER =
+      token(seq("#\\",
+                choice(seq(/[xX]/, repeat1(HEX_DIGIT)),
+                       NAMED_CHAR,
+                       ANY_CHAR)));
+
 module.exports = grammar({
     name: 'scheme',
     extras: $ =>
@@ -24,9 +76,9 @@ module.exports = grammar({
     [],
     rules: {
         source: $ =>
-            repeat(choice($._gap, $.directive)),
+            repeat(choice($._gap, $._form)),
 
-        _gap: $ => choice($._ws, $.comment, $.nested_comment),
+        _gap: $ => choice($._ws, $.comment, $.nested_comment, $.directive),
 
         _ws: $ => WHITESPACE,
 
@@ -34,6 +86,18 @@ module.exports = grammar({
         
         nested_comment: $ => NESTED_COMMENT,
 
-        directive: $ => DIRECTIVE
+        directive: $ => DIRECTIVE,
+
+        _form: $ =>
+            choice(
+                $.character,
+                $.string,
+                $.list),
+
+        character: $ => CHARACTER,
+
+        string: $ => STRING,
+
+        list: $ => seq(OPEN_BRACKET, CLOSE_BRACKET)
     }
 });

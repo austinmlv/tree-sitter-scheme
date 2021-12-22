@@ -1,5 +1,10 @@
 [
   {
+    "type": "list",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "source",
     "named": true,
     "fields": {},
@@ -7,6 +12,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "character",
+          "named": true
+        },
         {
           "type": "comment",
           "named": true
@@ -16,11 +25,39 @@
           "named": true
         },
         {
+          "type": "list",
+          "named": true
+        },
+        {
           "type": "nested_comment",
+          "named": true
+        },
+        {
+          "type": "string",
           "named": true
         }
       ]
     }
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "character",
+    "named": true
   },
   {
     "type": "comment",
@@ -33,5 +70,17 @@
   {
     "type": "nested_comment",
     "named": true
+  },
+  {
+    "type": "string",
+    "named": true
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
   }
 ]

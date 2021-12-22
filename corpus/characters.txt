@@ -1,0 +1,23 @@
+============
+Characters 1
+============
+#\a
+---
+(source
+  (character))
+
+============
+Characters 2
+============
+#\newline
+---
+(source
+  (character))
+
+============
+Characters 3
+============
+#\x03bb
+---
+(source
+  (character))

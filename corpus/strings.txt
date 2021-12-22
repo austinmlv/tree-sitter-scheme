@@ -1,0 +1,15 @@
+=========
+Strings 1
+=========
+"this is a string"
+---
+(source
+  (string))
+
+=========
+Strings 1
+=========
+"this string has a\nliteral newline in it"
+---
+(source
+  (string))
