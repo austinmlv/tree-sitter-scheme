@@ -40,6 +40,58 @@ const HEX_DIGIT =
 const OCTAL_DIGIT =
       /[0-7]/;
 
+const RADIX =
+      /#[bodx]/
+
+const EXACTNESS =
+      /#[ie]/
+
+const NUM_PREFIX =
+      choice(seq(optional(RADIX), optional(EXACTNESS)),
+             seq(optional(EXACTNESS), optional(RADIX)))
+
+const INFNAN =
+      /[+\-](inf\.0|nan\.0)/
+
+const SIGN =
+      /[+\-]?/
+
+const UINTEGER =
+      repeat1(HEX_DIGIT)
+
+const SUFFIX =
+      optional(seq('e', SIGN, repeat1(DIGIT)))
+
+const DECIMAL =
+      choice(seq(UINTEGER, SUFFIX),
+             seq('.', repeat1(DIGIT), SUFFIX),
+             seq(repeat1(DIGIT), '.', repeat(DIGIT), SUFFIX))
+
+const UREAL =
+      choice(UINTEGER,
+             seq(UINTEGER, '/', UINTEGER),
+             DECIMAL)
+             
+const REAL =
+      choice(seq(SIGN, UREAL), INFNAN)
+
+const COMPLEX =
+      choice(REAL,
+             seq(REAL, '@', REAL),
+             seq(REAL, '+', UREAL, 'i'),
+             seq(REAL, '-', UREAL, 'i'),
+             seq(REAL, '+', 'i'),
+             seq(REAL, '-', 'i'),
+             seq(REAL, INFNAN, 'i'),
+             seq('+', UREAL, 'i'),
+             seq('-', UREAL, 'i'),
+             seq(INFNAN, 'i'),
+             seq('+', 'i'),
+             seq('-', 'i'))
+             
+const NUMBER =
+      token(seq(NUM_PREFIX, COMPLEX))
+
 const NAMED_CHAR =
       choice('alarm',
              'backspace',
@@ -87,6 +139,7 @@ module.exports = grammar({
                 $.boolean,
                 $.character,
                 $.string,
+                $.number,
                 $.list),
 
         boolean: $ => BOOLEAN,
@@ -94,6 +147,8 @@ module.exports = grammar({
         character: $ => CHARACTER,
 
         string: $ => STRING,
+
+        number: $ => NUMBER,
 
         list: $ => seq(OPEN_BRACKET, CLOSE_BRACKET)
     }

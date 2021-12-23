@@ -1,0 +1,48 @@
+==========
+Numbers 01
+==========
+5
+---
+(source
+  (number))
+
+==========
+Numbers 02
+==========
+-5
+---
+(source
+  (number))
+
+==========
+Numbers 03
+==========
+1/2
+---
+(source
+  (number))
+
+==========
+Numbers 04
+==========
+-7/8
+---
+(source
+  (number))
+
+==========
+Numbers 05
+==========
+1.5
+---
+(source
+  (number))
+
+==========
+Numbers 06
+==========
+-7.075
+---
+(source
+  (number))
+
