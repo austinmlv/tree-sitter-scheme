@@ -10,6 +10,11 @@
     "fields": {}
   },
   {
+    "type": "identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "list",
     "named": true,
     "fields": {}
@@ -36,6 +41,10 @@
         },
         {
           "type": "directive",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         },
         {

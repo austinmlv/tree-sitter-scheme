@@ -1,0 +1,104 @@
+==============
+Identifiers 01
+==============
+...
+---
+(source
+  (identifier))
+
+==============
+Identifiers 02
+==============
++
+---
+(source
+  (identifier))
+
+==============
+Identifiers 03
+==============
++soup+
+---
+(source
+  (identifier))
+
+==============
+Identifiers 04
+==============
+<=?
+---
+(source
+  (identifier))
+
+==============
+Identifiers 05
+==============
+->string 
+---
+(source
+  (identifier))
+
+==============
+Identifiers 05
+==============
+a34kTMNs
+---
+(source
+  (identifier))
+
+==============
+Identifiers 06
+==============
+lambda
+---
+(source
+  (identifier))
+
+==============
+Identifiers 07
+==============
+list->vector
+---
+(source
+  (identifier))
+
+==============
+Identifiers 08
+==============
+q
+---
+(source
+  (identifier))
+
+==============
+Identifiers 10
+==============
+V17a
+---
+(source
+  (identifier))
+
+==============
+Identifiers 11
+==============
+|two words|
+---
+(source
+  (identifier))
+
+==============
+Identifiers 12
+==============
+|two\x20;words|
+---
+(source
+  (identifier))
+
+==============
+Identifiers 13
+==============
+the-word-recursion-has-many-meanings
+---
+(source
+  (identifier))
+

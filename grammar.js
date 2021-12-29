@@ -31,8 +31,23 @@ const ANY_CHAR =
 const DIGIT =
       /[0-9]/;
 
+const ALPHA =
+      /[a-zA-Z]/
+
 const ALPHANUMERIC =
       /[0-9a-zA-Z]/;
+
+const IDENTIFIER_CHAR =
+      /[!$%&*+\-.\/:<=>?@^_~a-zA-Z0-9]/
+
+const IDENTIFIER_START =
+      choice(/[!$%&*+\-.\/:<=>?@^_~]/, ALPHA)
+
+const IDENTIFIER_LITERAL =
+      token(seq('|', repeat1(/[^\|]/), '|'))
+
+const IDENTIFIER =
+      token(seq(IDENTIFIER_START, repeat(IDENTIFIER_CHAR)))
 
 const HEX_DIGIT =
       /[0-9a-fA-F]/;
@@ -140,6 +155,7 @@ module.exports = grammar({
                 $.character,
                 $.string,
                 $.number,
+                $.identifier,
                 $.list),
 
         boolean: $ => BOOLEAN,
@@ -149,6 +165,8 @@ module.exports = grammar({
         string: $ => STRING,
 
         number: $ => NUMBER,
+
+        identifier: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
 
         list: $ => seq(OPEN_BRACKET, CLOSE_BRACKET)
     }
