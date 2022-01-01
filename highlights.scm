@@ -39,8 +39,8 @@
   "when"
   "while"))
 
-((identifier) @function.builtin
- (#any-of? @function.builtin
+((identifier) @function
+ (#any-of? @function
   ;; (scheme base)
   "*"
   "+"
