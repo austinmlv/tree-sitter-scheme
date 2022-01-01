@@ -168,6 +168,6 @@ module.exports = grammar({
 
         identifier: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
 
-        list: $ => seq(OPEN_BRACKET, CLOSE_BRACKET)
+        list: $ => seq(OPEN_BRACKET, repeat($._form), CLOSE_BRACKET)
     }
 });

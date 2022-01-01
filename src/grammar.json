@@ -2784,6 +2784,13 @@
           ]
         },
         {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_form"
+          }
+        },
+        {
           "type": "CHOICE",
           "members": [
             {
