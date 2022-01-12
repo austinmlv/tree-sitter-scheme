@@ -6,6 +6,14 @@ Comments 1
 (source
   (comment))
 
+============
+Comments 1-2
+============
+; comment text here
+---
+(source
+  (comment))
+
 ==========
 Comments 2
 ==========
@@ -26,7 +34,7 @@ comment!
 |#
 ---
 (source
-  (nested_comment))
+  (comment))
 
 ==========
 Comments 4
@@ -38,7 +46,7 @@ comment!
 |#
 ---
 (source
-  (nested_comment))
+  (comment))
 
 ==========
 Comments 5

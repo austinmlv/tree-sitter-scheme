@@ -5,10 +5,8 @@ const WHITESPACE =
       token(repeat1(WHITESPACE_CHAR));
 
 const COMMENT =
-    token(/#?;.*\n?/);
-
-const NESTED_COMMENT =
-    token(seq(/#\|.*\n/, repeat(choice(WHITESPACE, /./)), /\|#\n?/));
+    token(choice(seq(choice('#;', ';'), repeat(/./)),
+          token(/#\|(\n|.)*\|#/)));
 
 const DELIMITER =
     choice(WHITESPACE, '|', '(', ')', '"', ';')
@@ -128,46 +126,25 @@ const STRING =
                            /./,
                            repeat(/[^"\\]/))),
                 '"'));
+// symbol element -> any character other than vertical line or \ |
+    // inline hex escape | mnemonic escape | \|
+// inline hex escape -> '\x' HEX_DIGIT+ ';'
 
 module.exports = grammar({
     name: 'scheme',
-    extras: $ =>
-    [],
+    extras: $ => [/\s/, $.comment],
     conflicts: $ =>
     [],
     rules: {
-        source: $ =>
-            repeat(choice($._gap, $._form)),
-
-        _gap: $ => choice($._ws, $.comment, $.nested_comment, $.directive),
-
-        _ws: $ => WHITESPACE,
-
-        comment: $ => COMMENT,
-        
-        nested_comment: $ => NESTED_COMMENT,
-
-        directive: $ => DIRECTIVE,
-
-        _form: $ =>
-            choice(
-                $.boolean,
-                $.character,
-                $.string,
-                $.number,
-                $.identifier,
-                $.list),
-
-        boolean: $ => BOOLEAN,
-
-        character: $ => CHARACTER,
-
+        source: $ => repeat($._sexp),
+        _sexp: $ =>  choice($.list, $._atom),
+        _atom: $ => choice($.string, $.number,$.character, $.boolean),
         string: $ => STRING,
-
         number: $ => NUMBER,
-
-        identifier: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
-
-        list: $ => seq(OPEN_BRACKET, repeat($._form), CLOSE_BRACKET)
+        character: $ => CHARACTER,
+        boolean: $ => BOOLEAN,
+        list: $ => seq("(", choice(repeat($._sexp)), ")"),
+        //directive: $ => DIRECTIVE,
+        comment: $ => COMMENT,
     }
 });
