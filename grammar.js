@@ -12,7 +12,7 @@ const DELIMITER =
     choice(WHITESPACE, '|', '(', ')', '"', ';')
 
 const DIRECTIVE =
-    token(seq(/#!/, repeat(/./), DELIMITER))
+    token(choice(/#!(?:\n|.)*!#/, /#!.*\n/))
 
 const OPEN_BRACKET =
     choice('(', '[', '{')
@@ -132,7 +132,7 @@ const STRING =
 
 module.exports = grammar({
     name: 'scheme',
-    extras: $ => [/\s/, $.comment],
+    extras: $ => [/\s/, $.comment, $.directive],
     conflicts: $ =>
     [],
     rules: {
@@ -145,7 +145,7 @@ module.exports = grammar({
         boolean: $ => BOOLEAN,
         symbol: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
         list: $ => seq(OPEN_BRACKET, choice(repeat($._sexp)), CLOSE_BRACKET),
-        //directive: $ => DIRECTIVE,
         comment: $ => COMMENT,
+        directive: $ => DIRECTIVE,
     }
 });

@@ -15,3 +15,13 @@ Directives 2
 ---
 (source
   (directive))
+
+==========
+Directives 3
+==========
+#!/usr/bin/env sh
+exec guile3 -L . -e main -s "$0" "$@"
+!#
+---
+(source
+  (directive))

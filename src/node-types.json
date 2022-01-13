@@ -109,6 +109,10 @@
     "named": true
   },
   {
+    "type": "directive",
+    "named": true
+  },
+  {
     "type": "number",
     "named": true
   },

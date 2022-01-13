@@ -1,4 +1,5 @@
 (comment) @comment
+(directive) @comment
 (boolean) @boolean
 (character) @character
 (string) @string

@@ -2723,6 +2723,22 @@
           }
         ]
       }
+    },
+    "directive": {
+      "type": "TOKEN",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "PATTERN",
+            "value": "#!(?:\\n|.)*!#"
+          },
+          {
+            "type": "PATTERN",
+            "value": "#!.*\\n"
+          }
+        ]
+      }
     }
   },
   "extras": [
@@ -2733,6 +2749,10 @@
     {
       "type": "SYMBOL",
       "name": "comment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "directive"
     }
   ],
   "conflicts": [],
