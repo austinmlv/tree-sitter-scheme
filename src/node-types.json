@@ -36,6 +36,10 @@
         {
           "type": "string",
           "named": true
+        },
+        {
+          "type": "symbol",
+          "named": true
         }
       ]
     }
@@ -67,9 +71,18 @@
         {
           "type": "string",
           "named": true
+        },
+        {
+          "type": "symbol",
+          "named": true
         }
       ]
     }
+  },
+  {
+    "type": "symbol",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "#",
@@ -84,6 +97,14 @@
     "named": false
   },
   {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
   },
@@ -94,5 +115,13 @@
   {
     "type": "string",
     "named": true
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
   }
 ]

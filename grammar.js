@@ -42,7 +42,7 @@ const IDENTIFIER_START =
       choice(/[!$%&*+\-.\/:<=>?@^_~]/, ALPHA)
 
 const IDENTIFIER_LITERAL =
-      token(seq('|', repeat1(/[^\|]/), '|'))
+      token(seq('|', repeat1(/[^|]/), '|'))
 
 const IDENTIFIER =
       token(seq(IDENTIFIER_START, repeat(IDENTIFIER_CHAR)))
@@ -138,12 +138,13 @@ module.exports = grammar({
     rules: {
         source: $ => repeat($._sexp),
         _sexp: $ =>  choice($.list, $._atom),
-        _atom: $ => choice($.string, $.number,$.character, $.boolean),
+        _atom: $ => choice($.string, $.number,$.character, $.boolean, $.symbol),
         string: $ => STRING,
         number: $ => NUMBER,
         character: $ => CHARACTER,
         boolean: $ => BOOLEAN,
-        list: $ => seq("(", choice(repeat($._sexp)), ")"),
+        symbol: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
+        list: $ => seq(OPEN_BRACKET, choice(repeat($._sexp)), CLOSE_BRACKET),
         //directive: $ => DIRECTIVE,
         comment: $ => COMMENT,
     }

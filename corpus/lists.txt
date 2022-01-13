@@ -5,3 +5,14 @@ Lists 1
 ---
 (source
   (list))
+
+=======
+Lists 2
+=======
+("a string")
+
+---
+
+(source
+  (list
+    (string)))

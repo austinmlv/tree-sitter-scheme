@@ -4,7 +4,7 @@ Identifiers 01
 ...
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 02
@@ -12,7 +12,7 @@ Identifiers 02
 +
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 03
@@ -20,7 +20,7 @@ Identifiers 03
 +soup+
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 04
@@ -28,7 +28,7 @@ Identifiers 04
 <=?
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 05
@@ -36,7 +36,7 @@ Identifiers 05
 ->string 
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 05
@@ -44,7 +44,7 @@ Identifiers 05
 a34kTMNs
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 06
@@ -52,7 +52,7 @@ Identifiers 06
 lambda
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 07
@@ -60,7 +60,7 @@ Identifiers 07
 list->vector
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 08
@@ -68,7 +68,7 @@ Identifiers 08
 q
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 10
@@ -76,7 +76,7 @@ Identifiers 10
 V17a
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 11
@@ -84,7 +84,7 @@ Identifiers 11
 |two words|
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 12
@@ -92,7 +92,7 @@ Identifiers 12
 |two\x20;words|
 ---
 (source
-  (identifier))
+  (symbol))
 
 ==============
 Identifiers 13
@@ -100,5 +100,5 @@ Identifiers 13
 the-word-recursion-has-many-meanings
 ---
 (source
-  (identifier))
+  (symbol))
 
