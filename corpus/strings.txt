@@ -7,9 +7,31 @@ Strings 1
   (string))
 
 =========
-Strings 1
+Strings 2
 =========
 "this string has a\nliteral newline in it"
 ---
+(source
+  (string))
+
+=========
+Strings 3
+=========
+"this string continues \
+onto another line"
+
+---
+
+(source
+  (string))
+
+=========
+Strings 4
+=========
+"this string continues with space after the '\\' \  
+onto another line"
+
+---
+
 (source
   (string))

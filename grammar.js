@@ -119,16 +119,19 @@ const NAMED_CHAR =
 const CHARACTER =
       seq('#', /\\[^\f\n\r\t ()]+/)
 
+const MNEMONIC_ESCAPE =
+      choice('\\a', '\\b', '\\t', '\\n', '\\r')
+
+const STRING_ELEMENT =
+      choice(/[^\\"]/,
+             MNEMONIC_ESCAPE,
+             '\\"',
+             '\\\\',
+             seq('\\', repeat(/[ \t]/), '\n', repeat(/[ \t]/)),
+             seq('\\x', HEX_DIGIT, ';'))
+
 const STRING =
-      token(seq('"',
-                repeat(/[^"\\]/),
-                repeat(seq("\\",
-                           /./,
-                           repeat(/[^"\\]/))),
-                '"'));
-// symbol element -> any character other than vertical line or \ |
-    // inline hex escape | mnemonic escape | \|
-// inline hex escape -> '\x' HEX_DIGIT+ ';'
+      token(seq('"', repeat(STRING_ELEMENT), '"'))
 
 module.exports = grammar({
     name: 'scheme',
