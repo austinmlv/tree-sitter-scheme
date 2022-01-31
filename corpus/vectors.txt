@@ -1,0 +1,62 @@
+==========
+Vectors 01
+==========
+#()
+
+---
+
+(source
+  (vector))
+
+==========
+Vectors 02
+==========
+#("a string")
+
+---
+
+(source
+  (vector
+    (string)))
+
+==========
+Vectors 03
+==========
+#("a string" "another string" "final string")
+
+---
+
+(source
+  (vector
+    (string)
+    (string)
+    (string)))
+
+==========
+Vectors 04
+==========
+#(#\H #\e #\l #\l #\o)
+
+---
+
+(source
+  (vector
+    (character)
+    (character)
+    (character)
+    (character)
+    (character)))
+
+==========
+Vectors 05
+==========
+#(some-symbol another-symbol final-symbol)
+
+---
+
+(source
+  (vector
+    (symbol)
+    (symbol)
+    (symbol)))
+

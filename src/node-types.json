@@ -44,6 +44,10 @@
         {
           "type": "symbol",
           "named": true
+        },
+        {
+          "type": "vector",
+          "named": true
         }
       ]
     }
@@ -83,6 +87,10 @@
         {
           "type": "symbol",
           "named": true
+        },
+        {
+          "type": "vector",
+          "named": true
         }
       ]
     }
@@ -93,7 +101,54 @@
     "fields": {}
   },
   {
+    "type": "vector",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "boolean",
+          "named": true
+        },
+        {
+          "type": "bytevector",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "list",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        },
+        {
+          "type": "symbol",
+          "named": true
+        },
+        {
+          "type": "vector",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "#",
+    "named": false
+  },
+  {
+    "type": "#(",
     "named": false
   },
   {

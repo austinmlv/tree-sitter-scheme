@@ -5,7 +5,8 @@
 (string) @string
 (number) @number
 (symbol) @variable
-(bytevector) @number
+(bytevector) @constant
+(vector) @constant
 
 (list
   (symbol) @function.macro
@@ -249,5 +250,5 @@
    "zero?"
    ""))
 
-["(" ")" "[" "]" "{" "}"] @punctuation.bracket
+["(" "#(" ")" "[" "]" "{" "}"] @punctuation.bracket
 ;;  vim:ft=scheme
