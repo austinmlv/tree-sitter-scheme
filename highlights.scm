@@ -4,9 +4,10 @@
 (character) @character
 (string) @string
 (number) @number
-(symbol) @variable
+(symbol) @literal
 (bytevector) @constant
 (vector) @constant
+(abbreviation) @punctuation.special
 
 (list
   (symbol) @function.macro

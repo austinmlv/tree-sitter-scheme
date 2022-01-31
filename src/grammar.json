@@ -22,6 +22,10 @@
         {
           "type": "SYMBOL",
           "name": "list"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "abbreviation"
         }
       ]
     },
@@ -2831,6 +2835,36 @@
               "value": "}"
             }
           ]
+        }
+      ]
+    },
+    "abbreviation": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "'"
+            },
+            {
+              "type": "STRING",
+              "value": "`"
+            },
+            {
+              "type": "STRING",
+              "value": ","
+            },
+            {
+              "type": "STRING",
+              "value": ",@"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_sexp"
         }
       ]
     },

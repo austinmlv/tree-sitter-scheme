@@ -145,7 +145,7 @@ module.exports = grammar({
     [],
     rules: {
         source: $ => repeat($._sexp),
-        _sexp: $ =>  choice($._atom, $.vector, $.list),
+        _sexp: $ =>  choice($._atom, $.vector, $.list, $.abbreviation),
         _atom: $ => choice($.boolean, $.number, $.character, $.string, $.bytevector,
                            $.symbol),
         boolean: $ => BOOLEAN,
@@ -156,6 +156,7 @@ module.exports = grammar({
         symbol: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
         vector: $ => seq('#(', repeat(choice($._sexp, WHITESPACE)), ')'),
         list: $ => seq(OPEN_BRACKET, repeat(choice($._sexp, WHITESPACE)), CLOSE_BRACKET),
+        abbreviation: $ => seq(choice("'", '`', ',', ',@'), $._sexp),
         comment: $ => COMMENT,
         directive: $ => DIRECTIVE,
     }

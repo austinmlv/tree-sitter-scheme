@@ -1,0 +1,49 @@
+================
+Abbreviations 01
+================
+'()
+
+---
+
+(source
+  (abbreviation
+    (list)))
+
+================
+Abbreviations 02
+================
+'list
+
+---
+
+(source
+  (abbreviation
+    (symbol)))
+
+================
+Abbreviations 03
+================
+'(symbolic data)
+
+---
+
+(source
+  (abbreviation
+    (list
+      (symbol)
+      (symbol))))
+
+================
+Abbreviations 04
+================
+`(quoted ,unquoted ,@unquote-spliced)
+
+---
+
+(source
+  (abbreviation
+    (list
+      (symbol)
+      (abbreviation (symbol))
+      (abbreviation (symbol)))))
+
