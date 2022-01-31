@@ -1,6 +1,6 @@
 [package]
 name = "tree-sitter-scheme"
-description = "A Tree-sitter parser for Scheme"
+description = "A Scheme grammar for Tree-sitter"
 version = "0.0.1"
 keywords = ["incremental", "parsing", "scheme"]
 categories = ["parsing", "text-editors"]
