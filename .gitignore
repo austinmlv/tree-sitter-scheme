@@ -1,5 +1,3 @@
-target/
-build/
-node_modules/
-src/
+target
+build
 install-nvim.sh
