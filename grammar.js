@@ -133,6 +133,11 @@ const STRING_ELEMENT =
 const STRING =
       token(seq('"', repeat(STRING_ELEMENT), '"'))
 
+const BYTE = /[0-9]{1,3}/
+
+const BYTEVECTOR =
+      token(seq('#u8(', repeat(choice(BYTE, WHITESPACE)), ')'))
+
 module.exports = grammar({
     name: 'scheme',
     extras: $ => [/\s/, $.comment, $.directive],
@@ -140,14 +145,16 @@ module.exports = grammar({
     [],
     rules: {
         source: $ => repeat($._sexp),
-        _sexp: $ =>  choice($.list, $._atom),
-        _atom: $ => choice($.string, $.number,$.character, $.boolean, $.symbol),
-        string: $ => STRING,
+        _sexp: $ =>  choice($._atom, $.list),
+        _atom: $ => choice($.boolean, $.number, $.character, $.string, $.bytevector,
+                           $.symbol),
+        boolean: $ => BOOLEAN,
         number: $ => NUMBER,
         character: $ => CHARACTER,
-        boolean: $ => BOOLEAN,
+        string: $ => STRING,
+        bytevector: $ => BYTEVECTOR,
         symbol: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
-        list: $ => seq(OPEN_BRACKET, choice(repeat($._sexp)), CLOSE_BRACKET),
+        list: $ => seq(OPEN_BRACKET, repeat(choice($._sexp, WHITESPACE)), CLOSE_BRACKET),
         comment: $ => COMMENT,
         directive: $ => DIRECTIVE,
     }

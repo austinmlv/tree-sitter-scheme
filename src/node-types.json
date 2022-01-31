@@ -22,6 +22,10 @@
           "named": true
         },
         {
+          "type": "bytevector",
+          "named": true
+        },
+        {
           "type": "character",
           "named": true
         },
@@ -54,6 +58,10 @@
       "types": [
         {
           "type": "boolean",
+          "named": true
+        },
+        {
+          "type": "bytevector",
           "named": true
         },
         {
@@ -103,6 +111,10 @@
   {
     "type": "]",
     "named": false
+  },
+  {
+    "type": "bytevector",
+    "named": true
   },
   {
     "type": "comment",

@@ -5,6 +5,7 @@
 (string) @string
 (number) @number
 (symbol) @variable
+(bytevector) @number
 
 (list
   (symbol) @function.macro

@@ -16,3 +16,28 @@ Lists 2
 (source
   (list
     (string)))
+
+=======
+Lists 3
+=======
+(1)
+
+---
+
+(source
+  (list
+    (number)))
+
+=======
+Lists 4
+=======
+(1 2 3)
+
+---
+
+(source
+  (list
+    (number)
+    (number)
+    (number)))
+
