@@ -26,14 +26,8 @@ const BOOLEAN =
 const ANY_CHAR =
       /./;
 
-const DIGIT =
-      /[0-9]/;
-
 const ALPHA =
       /[a-zA-Z]/
-
-const ALPHANUMERIC =
-      /[0-9a-zA-Z]/;
 
 const IDENTIFIER_CHAR =
       /[!$%&*+\-.\/:<=>?@^_~a-zA-Z0-9]/
@@ -47,63 +41,97 @@ const IDENTIFIER_LITERAL =
 const IDENTIFIER =
       token(seq(IDENTIFIER_START, repeat(IDENTIFIER_CHAR)))
 
-const HEX_DIGIT =
-      /[0-9a-fA-F]/;
+const BIN_DIGIT = /[01]/;
+const OCT_DIGIT = /[0-7]/;
+const DEC_DIGIT = /[0-9]/;
+const HEX_DIGIT = /[0-9a-fA-F]/;
 
-const OCTAL_DIGIT =
-      /[0-7]/;
+const SIGN = /[+\-]/;
+const INFNAN = seq(SIGN, /(inf|nan)\.0/);
 
-const RADIX =
-      choice(/#[box]/, optional('#d'))
+function digit(radix) {
+    switch(radix) {
+        case 2:
+            return BIN_DIGIT;
+            break;
+        case 8:
+            return OCT_DIGIT;
+            break;
+        case 10:
+            return DEC_DIGIT;
+            break;
+        case 16:
+            return HEX_DIGIT;
+    }
+}
 
-const EXACTNESS =
-      optional(/#[ie]/)
+const SUFFIX = optional(seq('e', optional(SIGN), repeat1(digit(10))));
 
-const NUM_PREFIX =
-      choice(seq(RADIX, EXACTNESS),
-             seq(EXACTNESS, RADIX))
+function radix(radix) {
+    switch(radix) {
+        case 2:
+            return '#b';
+            break;
+        case 8:
+            return '#o';
+            break;
+        case 10:
+            return optional('#d');
+            break;
+        case 16:
+            return '#x';
+            break;
+    }
+}
 
-const INFNAN =
-      /[+\-](inf\.0|nan\.0)/
+function prefix(r) {
+    return choice(seq(radix(r), optional(/#[ie]/)),
+                  seq(optional(/#[ie]/), radix(r)));
+}
 
-const SIGN =
-      /[+\-]?/
+function uinteger(radix) {
+    return repeat1(digit(radix));
+}
 
-const UINTEGER =
-      repeat1(HEX_DIGIT)
+function decimal() {
+    return choice(
+        seq(uinteger(10), SUFFIX),
+        seq('.', repeat1(digit(10)), SUFFIX),
+        seq(repeat1(digit(10)), '.', repeat(digit(10)), SUFFIX)
+    );
+}
 
-const SUFFIX =
-      optional(seq('e', SIGN, repeat1(DIGIT)))
+function ureal(radix) {
+    return choice(
+        uinteger(radix),
+        seq(uinteger(radix), '/', uinteger(radix)),
+        decimal()
+    );
+}
 
-const DECIMAL =
-      choice(seq(UINTEGER, SUFFIX),
-             seq('.', repeat1(DIGIT), SUFFIX),
-             seq(repeat1(DIGIT), '.', repeat(DIGIT), SUFFIX))
+function real(radix) {
+    return choice(seq(optional(/[+\-]/), ureal(radix)), INFNAN);
+}
 
-const UREAL =
-      choice(UINTEGER,
-             seq(UINTEGER, '/', UINTEGER),
-             repeat1(DECIMAL))
-             
-const REAL =
-      choice(seq(SIGN, UREAL), INFNAN)
+function complex(radix) {
+    return choice(
+        real(radix),
+        seq(real(radix), '@', real(radix)),
+        seq(real(radix), choice('+', '-'), ureal(radix), 'i'),
+        seq(real(radix), choice('+i', '-i')),
+        seq(real(radix), INFNAN, 'i'),
+        seq(choice('+', '-'), ureal(radix), 'i'),
+        seq(INFNAN, 'i'),
+        seq(choice('+', '-'), 'i'));
+}
 
-const COMPLEX =
-      choice(REAL,
-             seq(REAL, '@', REAL),
-             seq(REAL, '+', UREAL, 'i'),
-             seq(REAL, '-', UREAL, 'i'),
-             seq(REAL, '+', 'i'),
-             seq(REAL, '-', 'i'),
-             seq(REAL, INFNAN, 'i'),
-             seq('+', UREAL, 'i'),
-             seq('-', UREAL, 'i'),
-             seq(INFNAN, 'i'),
-             seq('+', 'i'),
-             seq('-', 'i'))
-             
-const NUMBER =
-      token(seq(NUM_PREFIX, COMPLEX))
+function num(radix) {
+    return token(seq(prefix(radix), complex(radix)));
+}
+
+function number() {
+    return choice(num(2), num(8), num(10), num(16));
+}
 
 const NAMED_CHAR =
       choice('alarm',
@@ -149,7 +177,7 @@ module.exports = grammar({
         _atom: $ => choice($.boolean, $.number, $.character, $.string,
                            $.bytevector, $.symbol),
         boolean: $ => BOOLEAN,
-        number: $ => NUMBER,
+        number: $ => number(),
         character: $ => CHARACTER,
         string: $ => STRING,
         bytevector: $ => BYTEVECTOR,

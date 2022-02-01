@@ -104,6 +104,11 @@
     }
   },
   {
+    "type": "number",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "source",
     "named": true,
     "fields": {},
@@ -252,10 +257,6 @@
   },
   {
     "type": "directive",
-    "named": true
-  },
-  {
-    "type": "number",
     "named": true
   },
   {
