@@ -1,5 +1,5 @@
 = Tree-sitter Scheme
-A Scheme grammar for Tree-sitter
+A Scheme grammar for the Tree-sitter parser
 
 This Tree-sitter grammar is a work in progress but should be sufficient for
 simple syntax highlighting for now.
