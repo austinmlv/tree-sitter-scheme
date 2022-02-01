@@ -54,14 +54,14 @@ const OCTAL_DIGIT =
       /[0-7]/;
 
 const RADIX =
-      /#[bodx]/
+      choice(/#[box]/, optional('#d'))
 
 const EXACTNESS =
-      /#[ie]/
+      optional(/#[ie]/)
 
 const NUM_PREFIX =
-      choice(seq(optional(RADIX), optional(EXACTNESS)),
-             seq(optional(EXACTNESS), optional(RADIX)))
+      choice(seq(RADIX, EXACTNESS),
+             seq(EXACTNESS, RADIX))
 
 const INFNAN =
       /[+\-](inf\.0|nan\.0)/
@@ -83,7 +83,7 @@ const DECIMAL =
 const UREAL =
       choice(UINTEGER,
              seq(UINTEGER, '/', UINTEGER),
-             DECIMAL)
+             repeat1(DECIMAL))
              
 const REAL =
       choice(seq(SIGN, UREAL), INFNAN)
@@ -146,8 +146,8 @@ module.exports = grammar({
     rules: {
         source: $ => repeat($._sexp),
         _sexp: $ =>  choice($._atom, $.vector, $.list, $.abbreviation),
-        _atom: $ => choice($.boolean, $.number, $.character, $.string, $.bytevector,
-                           $.symbol),
+        _atom: $ => choice($.boolean, $.number, $.character, $.string,
+                           $.bytevector, $.symbol),
         boolean: $ => BOOLEAN,
         number: $ => NUMBER,
         character: $ => CHARACTER,
