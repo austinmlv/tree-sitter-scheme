@@ -1,0 +1,30 @@
+{
+  "name": "tree-sitter-scheme",
+  "version": "0.1.0",
+  "description": "A Scheme grammar for Tree-sitter",
+  "main": "grammar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/austinmlv/tree-sitter-scheme.git"
+  },
+  "keywords": [
+    "parsing",
+    "scheme",
+    "Tree-sitter"
+  ],
+  "author": "Austin Miller",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/austinmlv/tree-sitter-scheme/issues"
+  },
+  "homepage": "https://github.com/austinmlv/tree-sitter-scheme#readme",
+  "dependencies": {
+    "nan": "^2.15.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.20.4"
+  }
+}
