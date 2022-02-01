@@ -1,0 +1,18 @@
+==========
+Symbols 01
+==========
+abcd
+
+---
+(source
+  (symbol))
+
+==========
+Symbols 02
+==========
+xyz
+
+---
+(source
+  (symbol))
+
