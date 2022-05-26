@@ -182,8 +182,12 @@ module.exports = grammar({
         string: $ => STRING,
         bytevector: $ => BYTEVECTOR,
         symbol: $ => choice(IDENTIFIER, IDENTIFIER_LITERAL),
-        vector: $ => seq('#(', repeat(choice($._sexp, WHITESPACE)), ')'),
-        list: $ => seq(OPEN_BRACKET, repeat(choice($._sexp, WHITESPACE)), CLOSE_BRACKET),
+        vector: $ =>
+            seq(field('open', '#('), repeat(choice($._sexp, WHITESPACE)),
+                field('close', ')')),
+        list: $ =>
+            seq(field('open', OPEN_BRACKET), repeat(choice($._sexp,
+                WHITESPACE)), field('close', CLOSE_BRACKET)),
         abbreviation: $ => seq(choice("'", '`', ',', ',@'), $._sexp),
         comment: $ => COMMENT,
         directive: $ => DIRECTIVE,
